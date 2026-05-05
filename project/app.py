@@ -3,43 +3,67 @@ from datetime import datetime
 import json, os, hashlib, uuid
 from functools import wraps
 from groq import Groq
-from dotenv import load_dotenv   # ← Penting!
+from dotenv import load_dotenv
 
-# Load environment variables dari file .env
+# Load environment variables
 load_dotenv()
 
-print("API RAW:", repr(os.environ.get("GROQ_API_KEY")))
+# ====================== FIX PATHS ======================
+# Dapatkan direktori absolut tempat file app.py berada
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__)
+# Path ke file JSON
+USERS_FILE = os.path.join(BASE_DIR, "data", "users.json")
+CHATS_FILE = os.path.join(BASE_DIR, "data", "chats.json")
+
+# Debug path
+print(f"=== BASE_DIR: {BASE_DIR}")
+print(f"=== USERS_FILE: {USERS_FILE}")
+print(f"=== CHATS_FILE: {CHATS_FILE}")
+
+# ====================== FLASK APP ======================
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "templates"),
+    static_folder=os.path.join(BASE_DIR, "static")
+)
+
 app.secret_key = os.environ.get("SECRET_KEY", "nexusai-super-secret-key-2024")
-
-USERS_FILE = "data/users.json"
-CHATS_FILE = "data/chats.json"
 
 # ====================== GROQ SETUP ======================
 groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
+print("API RAW:", repr(os.environ.get("GROQ_API_KEY")))
+
+# ====================== HELPER FUNCTIONS ======================
 def load_json(path):
+    """Load JSON file, return empty dict jika file tidak ada"""
     if not os.path.exists(path): 
+        # Buat folder jika belum ada
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         return {}
     with open(path, encoding='utf-8') as f: 
         return json.load(f)
 
 def save_json(path, data):
+    """Save data ke JSON file"""
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding='utf-8') as f: 
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 def hash_password(pw):
+    """Hash password dengan SHA256"""
     return hashlib.sha256(pw.encode()).hexdigest()
 
 def current_user():
+    """Get current logged in user"""
     uid = session.get("user_id")
     if not uid: 
         return None
     return load_json(USERS_FILE).get(uid)
 
 def login_required(f):
+    """Decorator untuk require login"""
     @wraps(f)
     def decorated(*args, **kwargs):
         if not current_user():
@@ -48,6 +72,8 @@ def login_required(f):
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated
+
+# ====================== ROUTES ======================
 
 @app.route("/")
 def index(): 
@@ -280,9 +306,13 @@ def stats():
         "message_count": current_user().get("message_count", 0)
     })
 
+# ====================== RUN APP ======================
 if __name__ == "__main__":
     # Debug info saat start
     print("=== NexusAI Starting ===")
+    print(f"BASE_DIR: {BASE_DIR}")
+    print(f"USERS_FILE: {USERS_FILE}")
+    print(f"CHATS_FILE: {CHATS_FILE}")
     print(f"GROQ_API_KEY loaded: {'YES' if os.environ.get('GROQ_API_KEY') else 'NO (ERROR!)'}")
     print(f"Server running at http://127.0.0.1:5000")
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, host='0.0.0.0')
