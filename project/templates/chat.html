@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexusAI — Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link rel="stylesheet" href="/static/css/chat.css" />
+</head>
+<body class="dark">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <span class="logo-mark">◈</span>
+        <span>NexusAI</span>
+      </div>
+      <button class="btn-new-chat" onclick="newChat()" title="Chat Baru">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        New Chat
+      </button>
+    </div>
+
+    <div class="sidebar-search">
+      <input type="text" placeholder="Cari percakapan..." id="searchInput" oninput="filterSessions()" />
+    </div>
+
+    <div class="sessions-list" id="sessionsList">
+      <div class="sessions-loading">Memuat sesi...</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-card" onclick="toggleUserMenu()">
+        <div class="user-avatar" id="sidebarAvatar">?</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarUsername">Loading...</div>
+          <div class="user-email" id="sidebarEmail">--</div>
+        </div>
+        <span class="user-menu-arrow">⋮</span>
+      </div>
+      <div class="user-menu" id="userMenu">
+        <button onclick="openPanel('settings')">⚙️ Pengaturan</button>
+        <button onclick="openPanel('stats')">📊 Statistik</button>
+        <button onclick="toggleTheme()">🌙 Toggle Tema</button>
+        <div class="menu-divider"></div>
+        <button class="menu-danger" onclick="doLogout()">🚪 Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CHAT AREA -->
+  <main class="chat-main">
+
+    <!-- TOP BAR -->
+    <div class="chat-topbar">
+      <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+      </button>
+      <div class="topbar-title" id="chatTitle">Pilih atau buat chat baru</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="openPanel('settings')" title="Pengaturan">⚙️</button>
+        <button class="icon-btn" id="deleteSessionBtn" onclick="deleteCurrentSession()" title="Hapus Chat" style="display:none">🗑️</button>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="messages-container" id="messagesContainer">
+      <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-logo">◈</div>
+        <h2>Halo, selamat datang di NexusAI</h2>
+        <p>Mulai percakapan baru atau pilih sesi dari sidebar</p>
+        <div class="quick-prompts">
+          <button onclick="quickPrompt('Jelaskan konsep machine learning secara sederhana')">🤖 Apa itu Machine Learning?</button>
+          <button onclick="quickPrompt('Buatkan saya script Python untuk mengunduh file dari internet')">🐍 Script Python downloader</button>
+          <button onclick="quickPrompt('Rekomendasikan 5 buku terbaik untuk pengembangan diri')">📚 Rekomendasi buku</button>
+          <button onclick="quickPrompt('Bagaimana cara membuat REST API dengan Flask?')">🌐 REST API dengan Flask</button>
+        </div>
+      </div>
+      <div id="messagesList"></div>
+    </div>
+
+    <!-- INPUT AREA -->
+    <div class="input-area" id="inputArea">
+      <div class="input-wrapper">
+        <textarea
+          id="messageInput"
+          placeholder="Ketik pesan Anda... (Enter = kirim, Shift+Enter = baris baru)"
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">NexusAI bisa membuat kesalahan. Selalu verifikasi informasi penting.</div>
+    </div>
+  </main>
+
+  <!-- SETTINGS PANEL -->
+  <div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+  <div class="panel" id="settingsPanel">
+    <div class="panel-header">
+      <h3>⚙️ Pengaturan</h3>
+      <button onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="setting-group">
+        <label>Model AI</label>
+        <select id="modelSelect">
+            <option value="llama-3.3-70b-versatile">LLaMA 3</option>
+            <option value="mixtral-8x7b-32768">Mixtral</option>
+       </select>
+      </div>
+      <div class="setting-group">
+        <label>System Prompt</label>
+        <textarea id="systemPromptInput" rows="5" placeholder="Instruksi khusus untuk AI..."></textarea>
+        <small>Tentukan kepribadian dan perilaku AI untuk sesi Anda.</small>
+      </div>
+      <div class="setting-group">
+        <label>Tema</label>
+        <div class="theme-toggle-btns">
+          <button id="themeDark" class="theme-btn active" onclick="setTheme('dark')">🌙 Dark</button>
+          <button id="themeLight" class="theme-btn" onclick="setTheme('light')">☀️ Light</button>
+        </div>
+      </div>
+      <button class="btn-primary btn-full" onclick="saveSettings()">Simpan Pengaturan</button>
+    </div>
+  </div>
+
+  <!-- STATS PANEL -->
+  <div class="panel" id="statsPanel">
+    <div class="panel-header">
+      <h3>📊 Statistik Penggunaan</h3>
+      <button onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="statSessions">-</div>
+          <div class="stat-label">Total Sesi</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statMessages">-</div>
+          <div class="stat-label">Total Pesan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statCount">-</div>
+          <div class="stat-label">Pesan Dikirim</div>
+        </div>
+      </div>
+      <div class="account-info">
+        <h4>Informasi Akun</h4>
+        <div class="info-row"><span>Username:</span><span id="infoUsername">-</span></div>
+        <div class="info-row"><span>Email:</span><span id="infoEmail">-</span></div>
+        <div class="info-row"><span>Bergabung:</span><span id="infoCreated">-</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+  <script src="/static/js/chat.js"></script>
+</body>
+</html>

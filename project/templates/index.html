@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexusAI — Open Source AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/landing.css" />
+</head>
+<body>
+  <!-- NOISE OVERLAY -->
+  <div class="noise"></div>
+
+  <!-- GRID BG -->
+  <div class="grid-bg"></div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">
+      <span class="logo-mark">◈</span>
+      <span>NexusAI</span>
+    </div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="https://github.com" target="_blank">GitHub</a>
+      <button class="btn-outline" onclick="openModal('login')">Login</button>
+      <button class="btn-primary" onclick="openModal('register')">Mulai Gratis</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Open Source · Powered by claude API
+    </div>
+    <h1 class="hero-title">
+      AI Assistant<br/>
+      <span class="gradient-text">Generasi Baru</span>
+    </h1>
+    <p class="hero-sub">
+      NexusAI menggabungkan kecerdasan Claude dengan antarmuka yang elegan.<br/>
+      Gratis, open source, dan siap digunakan sekarang.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary btn-lg" onclick="openModal('register')">
+        Coba Sekarang
+        <span class="btn-arrow">→</span>
+      </button>
+      <a href="https://github.com" class="btn-ghost">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+
+    <!-- FLOATING CARD PREVIEW -->
+    <div class="hero-preview">
+      <div class="preview-card">
+        <div class="preview-header">
+          <div class="preview-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="preview-title">NexusAI Chat</span>
+        </div>
+        <div class="preview-body">
+          <div class="msg user-msg">Buatkan saya kode Python untuk web scraping</div>
+          <div class="msg ai-msg">
+            <span class="ai-badge">◈ AI</span>
+            Tentu! Berikut kode Python menggunakan BeautifulSoup...
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="preview-glow"></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <h2 class="section-title">Fitur Unggulan</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Multi-Session Chat</h3>
+        <p>Simpan dan kelola banyak percakapan. Riwayat tersimpan otomatis.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎛️</div>
+        <h3>Custom System Prompt</h3>
+        <p>Sesuaikan kepribadian dan perilaku AI sesuai kebutuhanmu.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Auth & Akun</h3>
+        <p>Sistem login aman dengan enkripsi password SHA-256.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Dashboard Stats</h3>
+        <p>Pantau total pesan, sesi chat, dan aktivitas penggunaanmu.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌙</div>
+        <h3>Dark / Light Mode</h3>
+        <p>Tampilan yang nyaman di mata, siang maupun malam.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔓</div>
+        <h3>100% Open Source</h3>
+        <p>Kode terbuka. Deploy sendiri, modifikasi sesuka hati.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL OVERLAY -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+
+  <!-- LOGIN MODAL -->
+  <div class="modal" id="loginModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo">◈ NexusAI</div>
+    <h2 class="modal-title">Selamat Datang Kembali</h2>
+    <p class="modal-sub">Masuk ke akun Anda</p>
+    <div id="loginError" class="alert-error" style="display:none"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="loginUsername" placeholder="username Anda" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-pw">
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+        <button type="button" class="toggle-pw" onclick="togglePw('loginPassword', this)">👁</button>
+      </div>
+    </div>
+    <button class="btn-primary btn-full" onclick="doLogin()">
+      <span id="loginBtnText">Masuk</span>
+    </button>
+    <p class="modal-switch">Belum punya akun? <a href="#" onclick="openModal('register')">Daftar sekarang</a></p>
+  </div>
+
+  <!-- REGISTER MODAL -->
+  <div class="modal" id="registerModal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-logo">◈ NexusAI</div>
+    <h2 class="modal-title">Buat Akun Baru</h2>
+    <p class="modal-sub">Gratis selamanya</p>
+    <div id="registerError" class="alert-error" style="display:none"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="regUsername" placeholder="pilih username unik" />
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="email@example.com" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-pw">
+        <input type="password" id="regPassword" placeholder="min. 6 karakter" />
+        <button type="button" class="toggle-pw" onclick="togglePw('regPassword', this)">👁</button>
+      </div>
+    </div>
+    <div class="password-strength" id="pwStrength"></div>
+    <button class="btn-primary btn-full" onclick="doRegister()">
+      <span id="regBtnText">Buat Akun</span>
+    </button>
+    <p class="modal-switch">Sudah punya akun? <a href="#" onclick="openModal('login')">Masuk</a></p>
+  </div>
+
+  <script src="/static/js/landing.js"></script>
+</body>
+</html>
